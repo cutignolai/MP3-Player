@@ -13,12 +13,13 @@
 
 #include <stdbool.h>
 
+
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
 
-#define SYSTICK_DEV_MODE   1
 #define SYSTICK_ISR_FREQUENCY_HZ 1000U
+
 
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
@@ -33,7 +34,7 @@
  ******************************************************************************/
 
 /**
- * @brief Initialize SysTick driver
+ * @brief Initialize SysTic driver
  * @param funcallback Function to be call every SysTick
  * @return Initialization and registration succeed
  */
