@@ -28,6 +28,11 @@
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
 
+typedef enum {
+	DMA_0,
+	DMA_1,
+} DMA_n;
+
 typedef struct DMA_config
 {
   uint8_t  channel;

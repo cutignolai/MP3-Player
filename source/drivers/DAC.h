@@ -25,6 +25,11 @@
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
 
+typedef enum {
+	DAC_0,
+	DAC_1,
+} DAC_n;
+
 typedef DAC_Type *DAC_t;
 typedef uint16_t DACData_t;
 
@@ -33,9 +38,10 @@ typedef uint16_t DACData_t;
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
-void initDAC(void);
-void DACEnableDMA(void);
+void initDAC(DAC_n channel);
+void DACEnableDMA(DAC_n channel);
 void DAC_SetData (DAC_t dac, DACData_t data);
+void DAC_Enable(DAC_n channel, bool enable);
 
 /*******************************************************************************
  * FUNCTION PROTOTYPES WITH GLOBAL SCOPE

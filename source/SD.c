@@ -19,6 +19,7 @@
 #include "hardware.h"
 #include "gpio.h"
 #include "board.h"
+#include "fsl_board.h"
 
 #include "SD.h"			//del archivo
 
@@ -287,7 +288,7 @@ void PlaySong(char *name, uint8_t volumen) {
 		if(!dac_on) {       //PRENDO EL DAC
 			dac_on = 1;
 			RunDAC(Data_Frame.samprate, Data_Frame.outputSamps);
-			//DAC_Enable(DAC_0, true);                                        
+			DAC_Enable(DAC_0, true);                                        
 		}
 		//Si tiene un canal (si es mono), duplica los datos para mantener velocidad de reproduccion
 		if (Data_Frame.nChans == 1) {		
@@ -303,6 +304,7 @@ void PlaySong(char *name, uint8_t volumen) {
     if (!outOfData) {			//TO DO: JUNTARME CON CUTY A HACER EL VUMETRO
 
 		ProvideAudioBuffer(samples, Data_Frame.outputSamps, volumen);
+
 
  		//VUMETRO
         
@@ -520,7 +522,7 @@ static uint32_t Mp3ReadId3V2Text(FIL* pInFile, uint32_t unDataLen, char* pszBuff
  **************************************************************************************/
 static void RunDAC(int sample_rate, int output_samples) {
 	
-	initDAC();			//Inicializo el DAC
+	initDAC(DAC_0);			//Inicializo el DAC
 
 	// DMA Config
 	DMA_config_t DMAconfig = {.channel = DMA_1, .source_buffer = sample_buffer,
@@ -565,8 +567,8 @@ static void ProvideAudioBuffer(int16_t *samples, int total_samples, uint8_t volu
 
 	//Ajusto el Volumen: del Indu
 	int32_t promedio = 0;
-	uint8_t volume = volumen * VOLUMEN_FACTOR;
-	for(int i = 0; i < total_samples; i++) {
+	uint8_t volume = volumen * VOLUMEN_FACTOR;							//Como es de 20 niveles, se multiplica por 5
+	for(int i = 0; i < total_samples; i++) {							//para que el nivel 20 sea el 100%
 		if(i%2 == 0) {													//Si es par
 			promedio =   (samples[i] + samples[i+1])/2;					//promedio de ambas samples
 			samples[i] = (int16_t)promedio * (int32_t)volume / 100;		//Modifico volumen de la sample (regla de 3)
