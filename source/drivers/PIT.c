@@ -98,19 +98,19 @@ void Pit_SetCallback(uint8_t timer_id, void(*funcallback)(void)) {
 void PIT0_IRQHandler(void)
 {
 	callback0();
-	PIT_ptr->CHANNEL[0].TFLG = PIT_TFLG_TIF(1);
+	PIT_ptr->CHANNEL[PIT_0].TFLG = PIT_TFLG_TIF(1);
 }
 
 void PIT1_IRQHandler(void)
 {
 	callback1();
-	PIT_ptr->CHANNEL[1].TFLG = PIT_TFLG_TIF(1);
+	PIT_ptr->CHANNEL[PIT_1].TFLG = PIT_TFLG_TIF(1);
 }
 
 void PIT2_IRQHandler(void)
 {
 	callback2();
-	PIT_ptr->CHANNEL[2].TFLG = PIT_TFLG_TIF(1);
+	PIT_ptr->CHANNEL[PIT_2].TFLG = PIT_TFLG_TIF(1);
 }
 /*******************************************************************************
  ******************************************************************************/

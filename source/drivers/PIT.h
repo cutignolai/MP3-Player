@@ -13,6 +13,12 @@
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
 
+typedef enum {
+	PIT_0,
+	PIT_1,
+  PIT_2
+} DAC_n;
+
 
 /*******************************************************************************
  * FUNCTION PROTOTYPES WITH GLOBAL SCOPE

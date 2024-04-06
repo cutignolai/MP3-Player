@@ -230,7 +230,6 @@ void PlaySong(char *name, uint8_t volumen) {
 		ping_pong_buffer = buffer_ptr;							//Igualo punteros  -->   pongo el puntero al principio del buffer
 		bytes_a_leer = BUFFER_SIZE - bytes_faltantes;			//actualizo los bytes a leer
 
-        //CAMBIAR PARA PRENDER EL LED
 		// Prendo LED para mostrar al usuario que esta leyendo los archivos
 		GPIO_WritePinOutput(GPIOB, BOARD_LED_RED_GPIO_PIN , 0);
 		fresult = f_read(&file, buffer_ptr + bytes_faltantes, bytes_a_leer, &bytes_leidos);
@@ -536,9 +535,8 @@ static void RunDAC(int sample_rate, int output_samples) {
 	PIT_startTime(TIMER_ID);		//Le doy play al timer pasandole el ID
 }
 
-//UNIR CON CUTY LO DEL ECUALIZADOR
-//PREGUNTAR A NICO QUE VERGA HACE EN EL VOLUMEN
-//PREGUNTAR A NICO QUE VERGA HACE EN EL PING PONG BUFFER
+//PREGUNTAR QUE VERGA HACE EN EL VOLUMEN
+//PREGUNTAR QUE VERGA HACE EN EL PING PONG BUFFER
 /**************************************************************************************
  * Function:    ProvideAudioBuffer
  *
@@ -552,15 +550,15 @@ static void ProvideAudioBuffer(int16_t *samples, int total_samples, uint8_t volu
 	static uint8_t state = 0;
 
 	//Ecualizador
-	if ( GetOnOffEq() == 1) {							//Si el ecualizador esta en ON
+	if ( GetOnOffEq()) {							//Si el ecualizador esta en ON
 		float32_t input_filter_buffer[SAMPLE_BUFFER_SIZE];	//Uso un buffer para la entrada del filtro
 		float32_t output_filter_buffer[SAMPLE_BUFFER_SIZE];	//Uso otro para la salida del filtro
-		 for (int i = 0; i < total_samples; i++) {
+		for (int i = 0; i < total_samples; i++) {
 			input_filter_buffer[i] = (float32_t)samples[i];	//Pongo las samples en el buffer
 		}
 		offEqualizer(input_filter_buffer, output_filter_buffer, total_samples);	//Hago el proceso del filtro
 
-		 for (int i = 0; i < total_samples; i++) {		//Ahora pongo lo resultante del filtro en las samples
+		for (int i = 0; i < total_samples; i++) {		//Ahora pongo lo resultante del filtro en las samples
 			samples[i] = (int16_t) output_filter_buffer[i];
 		}
 	}			//Aca ya esta sintetizada
