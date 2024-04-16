@@ -1,6 +1,6 @@
 /***************************************************************************//**
   @file     SD.c
-  @brief    Music Driver for K64F
+  @brief    Mike Towers Baby
   @author   Micho
   @cite		https://github.com/vinodstanur/frdmk64f_mp3_player/blob/master/source/main.c
  ******************************************************************************/
@@ -14,6 +14,8 @@
 #include <stddef.h>
 #include <stdio.h>
 #include <math.h>
+#include <stdlib.h>
+#include <stdint.h>
 
 #include "MK64F12.h"
 #include "hardware.h"
@@ -166,7 +168,7 @@ uint8_t SD_Init (uint8_t songs[ALL_SONGS][NAME_SIZE]){
 }
 
 
-//CEQUEAR EL ENABLE DEL DAC
+//PREGUNTAR EL IF TURBIO
 //FALTA: EL VUMETRO
 /**************************************************************************************
  * Function:    PlaySong

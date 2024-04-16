@@ -1,6 +1,6 @@
 /***************************************************************************//**
   @file     SD.h
-  @brief    SD Driver for K64F
+  @brief    Mike Towers Baby
   @authors  Micho
  ******************************************************************************/
 
@@ -13,6 +13,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "ff.h"
 #include "diskio.h"
 #include "fsl_clock.h"
@@ -20,11 +22,15 @@
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
-#define N 50
-#define M 16
-#define BUFFER_SIZE (1024*M)
-#define STRING_SPACE 64
+#define ALL_SONGS 50
+#define NAME_SIZE 16
+#define BUFFER_SIZE (1024*NAME_SIZE)
+#define STRING_SIZE 64
 #define TIMER_ID 1
+#define DAC_OFF_H 0x8U
+#define DAC_OFF_L 0x00U
+#define VOLUMEN_FACTOR 5
+#define SAMPLE_BUFFER_SIZE 2304
 
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
@@ -39,7 +45,7 @@
  * FUNCTION PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
 
-uint8_t SD_Init (uint8_t songs[N][M]);
+uint8_t SD_Init (uint8_t songs[ALL_SONGS][NAME_SIZE]);
 
 void PlaySong(char *name, uint8_t volumen);
 
@@ -49,7 +55,7 @@ void PauseSong(void);
 
 void ResumeSong(void);
 
-void getSongName(uint8_t SongName[1][M]);
+void getSongName(uint8_t SongName[1][NAME_SIZE]);
 
 /*******************************************************************************
  ******************************************************************************/
