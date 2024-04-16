@@ -168,7 +168,7 @@ uint8_t SD_Init (uint8_t songs[ALL_SONGS][NAME_SIZE]){
 }
 
 
-//PREGUNTAR EL IF TURBIO
+
 //FALTA: EL VUMETRO
 /**************************************************************************************
  * Function:    PlaySong
@@ -233,9 +233,9 @@ void PlaySong(char *name, uint8_t volumen) {
 		bytes_a_leer = BUFFER_SIZE - bytes_faltantes;			//actualizo los bytes a leer
 
 		// Prendo LED para mostrar al usuario que esta leyendo los archivos
-		GPIO_WritePinOutput(GPIOB, BOARD_LED_RED_GPIO_PIN , 0);
+		//GPIO_WritePinOutput(GPIOB, BOARD_LED_RED_GPIO_PIN , 0);
 		fresult = f_read(&file, buffer_ptr + bytes_faltantes, bytes_a_leer, &bytes_leidos);
-		GPIO_WritePinOutput(GPIOB, BOARD_LED_RED_GPIO_PIN , 1);
+		//GPIO_WritePinOutput(GPIOB, BOARD_LED_RED_GPIO_PIN , 1);
 
 		bytes_faltantes = BUFFER_SIZE;				//actualizo bytes_left con la cantidad entera del buffer
 
@@ -511,7 +511,7 @@ static uint32_t Mp3ReadId3V2Text(FIL* pInFile, uint32_t unDataLen, char* pszBuff
 
 
 
-//CEQUEAR TODO
+
 /**************************************************************************************
  * Function:    RunDAC
  *
@@ -537,8 +537,7 @@ static void RunDAC(int sample_rate, int output_samples) {
 	PIT_startTime(TIMER_ID);		//Le doy play al timer pasandole el ID
 }
 
-//PREGUNTAR QUE VERGA HACE EN EL VOLUMEN
-//PREGUNTAR QUE VERGA HACE EN EL PING PONG BUFFER
+
 /**************************************************************************************
  * Function:    ProvideAudioBuffer
  *
