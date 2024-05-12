@@ -21,7 +21,7 @@ void DMA_DisableRequest(uint8_t channel);
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
 
-static void(*funcallback)(void) DMA_callbacks [2];
+static dma_callback_t DMA_callbacks [2];
 
 /*******************************************************************************
  *******************************************************************************
@@ -36,10 +36,10 @@ void DMA_Config(DMA_config_t config){
 
 	// Habilito canal y setteo el request source con el FTM-CH0
 	if(config.request_source >= 58) {
-		DMAMUX->CHCFG[DMA_channel] |= DMAMUX_CHCFG_ENBL_MASK | DMAMUX_CHCFG_TRIG_MASK | DMAMUX_CHCFG_SOURCE((uint8_t)config.request_source);
+		DMAMUX->CHCFG[config.channel] |= DMAMUX_CHCFG_ENBL_MASK | DMAMUX_CHCFG_TRIG_MASK | DMAMUX_CHCFG_SOURCE((uint8_t)config.request_source);
 	}
 	else {
-		DMAMUX->CHCFG[DMA_channel] |= DMAMUX_CHCFG_ENBL_MASK | DMAMUX_CHCFG_SOURCE((uint8_t)config.request_source);
+		DMAMUX->CHCFG[config.channel] |= DMAMUX_CHCFG_ENBL_MASK | DMAMUX_CHCFG_SOURCE((uint8_t)config.request_source);
 	}
 
 	// Habilito las interrupciones
@@ -57,7 +57,7 @@ void DMA_Config(DMA_config_t config){
 	DMA0->TCD[config.channel].DADDR = (uint32_t)(config.destination_buffer);  // To change FTM Duty
 
 	// Configuiro el offset para el origen y el destino	
-	DMA0->TCD[config.channel].SOFF = config.source_offeset; 
+	DMA0->TCD[config.channel].SOFF = config.source_offset;
 	DMA0->TCD[config.channel].DOFF =0x00; 
 
 	// Configuro la taza de trtansferencia del origen y destino
@@ -101,7 +101,7 @@ void DMA_Config(DMA_config_t config){
 
 }
 
-void DMA_SetCallback(uint8_t channel, void(*funcallback)(void)){
+void DMA_SetCallback(dma_callback_t funcallback){
 	DMA_callbacks[DMA_0] = funcallback;
 }
 

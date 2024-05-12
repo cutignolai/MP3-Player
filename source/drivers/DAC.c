@@ -70,7 +70,7 @@ void DAC_SetData (DAC_n channel, DACData_t data)
 }
 
 
-void DAC_Enable(DAC_n channel, bool enable) 
+void DAC_Enable(DAC_n channel, bool enable)
 {
 	DAC_t dac = (channel == DAC_0) ? DAC0 : DAC1;
     if (enable) {

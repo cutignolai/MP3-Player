@@ -12,21 +12,17 @@
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
-#define FTM0CH0       20
-#define FTM0CH1       21
-#define FTM0CH2       22
-#define FTM0CH3       23
-#define FTM0CH4       24
-#define FTM0CH5       25
-#define FTM0CH6       26
-#define FTM0CH7       27
-#define DMADAC0       45
-#define DMADAC1       46
-#define DMAALWAYS63   63	
+
 
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
+
+typedef enum {
+	FTM0CH0 = 20, 	FTM0CH1 = 21, FTM0CH2 = 22, FTM0CH3 = 23,
+	FTM0CH4 = 24, 	FTM0CH5 = 25, FTM0CH6 = 26, FTM0CH7 = 27,
+	DMADAC0 = 45,	DMADAC1 = 46, DMAALWAYS63 = 63
+} DMA_request_t;
 
 typedef enum {
 	DMA_0,
@@ -46,7 +42,7 @@ typedef struct DMA_config
 }DMA_config_t;
 
 
-
+typedef void (*dma_callback_t)(void);
 
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
@@ -59,7 +55,7 @@ typedef struct DMA_config
 
 void DMA_Config(DMA_config_t config);
 
-void DMA_SetCallback(uint8_t channel, void(*funcallback)(void));
+void DMA_SetCallback(void(*funcallback)(void));
 
 uint32_t DMA_GetRemainingMajorLoopCount(uint32_t channel);
 

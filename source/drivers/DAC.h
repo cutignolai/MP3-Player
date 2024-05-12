@@ -25,15 +25,13 @@
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
  ******************************************************************************/
 
+typedef DAC_Type *DAC_t;
+typedef uint16_t DACData_t;
+
 typedef enum {
 	DAC_0,
 	DAC_1,
 } DAC_n;
-
-typedef DAC_Type *DAC_t;
-typedef uint16_t DACData_t;
-
-
 
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
