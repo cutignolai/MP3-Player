@@ -15,9 +15,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ff.h"
-#include "diskio.h"
-#include "fsl_clock.h"
+#include "fatfs/ff.h"
+#include "fatfs/diskio.h"
+#include "drivers/fsl_clock.h"
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE

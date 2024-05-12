@@ -21,19 +21,19 @@
 #include "hardware.h"
 #include "gpio.h"
 #include "board.h"
-#include "fsl_board.h"
+#include "fsl_board/fsl_board.h"
 
 #include "SD.h"			//del archivo
 
-#include "mp3dec.h"		//helix
+#include "../helix/pub/mp3dec.h"		//helix
 
 // Fresscale Libs
-#include "fsl_debug_console.h"
-#include "fsl_port.h"
-#include "fsl_gpio.h"
-#include "diskio.h"
-#include "ffconf.h"
-#include "fsl_clock.h"
+#include "drivers/fsl_debug_console.h"
+#include "drivers/fsl_port.h"
+#include "drivers/fsl_gpio.h"
+#include "fatfs/diskio.h"
+#include "fatfs/ffconf.h"
+#include "drivers/fsl_clock.h"
 
 //Our Drivers
 #include "DMA.h"
@@ -60,14 +60,14 @@
 HMP3Decoder  Decoder;		//Decoder
 MP3FrameInfo Data_Frame;	//Data Frame
 
-uint8_t ping_pong_buffer[BUFFER_SIZE];		//PING PONG BUFFER
-char  *buffer_ptr;							//puntero al buffer
+char  *buffer_ptr				;		//PING PONG BUFFER
+uint8_t ping_pong_buffer[BUFFER_SIZE];			//puntero al buffer
 static char artista[STRING_SIZE];			//artista
 static char titulo[STRING_SIZE];			//nombre de la cancion
 int16_t sample_buffer[SAMPLE_BUFFER_SIZE];	//sample buffer
 int16_t *samples = sample_buffer;			//samples
 float32_t FloatSamples[SAMPLE_BUFFER_SIZE];	//samples
-
+int16_t audio_buff[2304*2];		//buffer partido> un frame decodificando y otro leyendo con DMA (en paralelo)
 
 /*******************************************************************************
  *         FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
@@ -228,13 +228,13 @@ void PlaySong(char *name, uint8_t volumen) {
     static unsigned int bytes_leidos, bytes_a_leer;
 	//Si los bytes que faltan son menos de la mitad entonces entrame
 	if( bytes_faltantes < BUFFER_SIZE/2 ) {              //Si me quedan menos que la mitad del buffer
-		memcpy( buffer_ptr, ping_pong_buffer, bytes_faltantes );  //destino:buffer_ptr   source:ping_pong_buffer   #bytes:bytes_faltantes
-		ping_pong_buffer = buffer_ptr;							//Igualo punteros  -->   pongo el puntero al principio del buffer
+		memcpy( ping_pong_buffer, buffer_ptr, bytes_faltantes );  //destino:ping_pong_buffer   source:buffer_ptr   #bytes:bytes_faltantes
+		buffer_ptr = ping_pong_buffer;							//Igualo punteros  -->   pongo el puntero al principio del buffer
 		bytes_a_leer = BUFFER_SIZE - bytes_faltantes;			//actualizo los bytes a leer
 
 		// Prendo LED para mostrar al usuario que esta leyendo los archivos
 		//GPIO_WritePinOutput(GPIOB, BOARD_LED_RED_GPIO_PIN , 0);
-		fresult = f_read(&file, buffer_ptr + bytes_faltantes, bytes_a_leer, &bytes_leidos);
+		fresult = f_read(&file, ping_pong_buffer + bytes_faltantes, bytes_a_leer, &bytes_leidos);
 		//GPIO_WritePinOutput(GPIOB, BOARD_LED_RED_GPIO_PIN , 1);
 
 		bytes_faltantes = BUFFER_SIZE;				//actualizo bytes_left con la cantidad entera del buffer
@@ -247,7 +247,7 @@ void PlaySong(char *name, uint8_t volumen) {
 
     //locate the next byte-alinged sync word in the raw mp3 stream
     //buffer to search for sync word max number of bytes to search in buffer
-    sync = MP3FindSyncWord((unsigned char*)ping_pong_buffer, bytes_faltantes);		//te busco el proximo que va a estar alineado
+    sync = MP3FindSyncWord((unsigned char*)buffer_ptr, bytes_faltantes);		//te busco el proximo que va a estar alineado
 	//Busco la parte que son frames de cancion, entonces me la sincroniza al primer frame
 	//Me devuelve lo que tengo que correr el buffer para sincronizarlo con el primer frame
 
@@ -257,13 +257,13 @@ void PlaySong(char *name, uint8_t volumen) {
 	}
 
 	bytes_faltantes -= sync;   		//corro los bytes_faltantes por la sincronizacion --> tengo menos bytes para comer
-	ping_pong_buffer += sync;		//corro el puntero del buffer a leer por la sincronizacion
+	buffer_ptr += sync;		//corro el puntero del buffer a leer por la sincronizacion
 
 
 
     //decode one frame of MP3 data
 	//Decodifico cada frame que le mando
-    error = MP3Decode(Decoder, (unsigned char**)&ping_pong_buffer, (int*)&bytes_faltantes, samples, 0);
+    error = MP3Decode(Decoder, (unsigned char**)&buffer_ptr, (int*)&bytes_faltantes, samples, 0);
     //error code, defined in mp3dec.h (0 means no error, < 0 means error)
 
 	if (error) {		//Hubo error, depende del error hago diferentes cosas
@@ -275,7 +275,7 @@ void PlaySong(char *name, uint8_t volumen) {
 			break;
 			case ERR_MP3_NULL_POINTER:
 				bytes_faltantes -=1;
-				ping_pong_buffer+=1;
+				buffer_ptr+=1;
 			case ERR_MP3_FREE_BITRATE_SYNC:
 			default:
 				outOfData = 1;
