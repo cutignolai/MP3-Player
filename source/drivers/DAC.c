@@ -62,7 +62,7 @@ void DACEnableDMA(DAC_n channel)
 	dac->C1 = DAC_C1_DMAEN_MASK;	// Enable DMA	// Enable DMA
 }
 
-void DAC_SetData (DAC_t dac, DACData_t data)
+void DAC_SetData (DAC_n channel, DACData_t data)
 {
 	DAC_t dac = (channel == DAC_0) ? DAC0 : DAC1;
 	dac->DAT[0].DATL = DAC_DATL_DATA0(data);                          //ME MANDA DE A UN DATO

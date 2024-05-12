@@ -40,7 +40,7 @@ typedef uint16_t DACData_t;
  ******************************************************************************/
 void initDAC(DAC_n channel);
 void DACEnableDMA(DAC_n channel);
-void DAC_SetData (DAC_t dac, DACData_t data);
+void DAC_SetData (DAC_n channel, DACData_t data);
 void DAC_Enable(DAC_n channel, bool enable);
 
 /*******************************************************************************
