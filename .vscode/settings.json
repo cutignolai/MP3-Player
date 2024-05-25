@@ -1,6 +1,8 @@
 {
     "files.associations": {
         "hardware.h": "c",
-        "core_cm4.h": "c"
+        "core_cm4.h": "c",
+        "board.h": "c",
+        "timer.h": "c"
     }
 }

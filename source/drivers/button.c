@@ -8,9 +8,9 @@
  *                              INCLUDE HEADER FILES                            *
  ******************************************************************************/
 
-#include "board_encoder_display.h"
 #include "button.h"
 #include "timer.h"
+#include "board.h"
 #include  <os.h>
 
 /*******************************************************************************
@@ -20,9 +20,7 @@
 #define PIN_C   DIO_10
 #define ON      LOW         //Activo bajo ---> Prendido
 #define OFF     HIGH        //Activo bajo ---> Apagado
-#ifdef BUTTON_DEV_MODE
-	#define BUTTON_TEST_PIN		PTD2
-#endif
+
 
 /*******************************************************************************
  *                              ENUMS AND STRUCTURES                            *
@@ -67,9 +65,7 @@ void initButton() {
 
 	gpioMode(PIN_C, INPUT);             // Inicializo pin
 
-#ifdef BUTTON_DEV_MODE
-	gpioMode(BUTTON_TEST_PIN, OUTPUT);
-#endif
+
 
     button_event = NONE_CLICK;          // Se inicializa con el evento nulo (que no hay)
     status = false;                     // Variable de cambio en false
@@ -145,9 +141,6 @@ static void event_coming(bool C){
 
 static void callback_button(void){ 
 
-#ifdef BUTTON_DEV_MODE
-	gpioWrite(BUTTON_TEST_PIN, 1);
-#endif
 
 	if (click_en){					// Click timer habilitado?
 		if (long_click_en){				// Long click timer habilitado?

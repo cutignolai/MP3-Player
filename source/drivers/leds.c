@@ -10,7 +10,7 @@
 
 #include "leds.h"
 #include "timer.h"
-#include "board_encoder_display.h"
+#include "board.h"
 #include "gpio.h"
 
 /*******************************************************************************

@@ -8,7 +8,7 @@
  *                              INCLUDE HEADER FILES                            *
  ******************************************************************************/
 
-#include "board_encoder_display.h"
+#include "board.h"
 #include "encoder.h"
 #include "timer.h"
 
@@ -19,9 +19,6 @@
 
 #define PIN_A   DIO_8
 #define PIN_B   DIO_6
-#ifdef ENCODER_DEV_MODE
-	#define ENCODER_TEST_PIN	PTD0
-#endif
 #define ENCODER_TIME    1
 
 /*******************************************************************************
@@ -64,9 +61,6 @@ void initEncoder() {
 	gpioMode(PIN_A, INPUT);
 	gpioMode(PIN_B, INPUT);
 
-#ifdef ENCODER_DEV_MODE
-	gpioMode(ENCODER_TEST_PIN, OUTPUT);
-#endif
 
     encoder_event = NONE_ENCODER;       // Se inicializa con el evento nulo (que no hay)
     status = false;                     // Variable de cambio en falso
@@ -214,17 +208,9 @@ static encoderEvent_t event_coming(bool A, bool B){         // FSM: check if the
 
 void callback_encoder(void){  
 
-#ifdef ENCODER_DEV_MODE
-	gpioWrite(ENCODER_TEST_PIN, 1);
-#endif
-
 	current_A = gpioRead(PIN_A);							//Me fijo valores actuales de los pines de A y B
 	current_B = gpioRead(PIN_B);
     encoder_event = event_coming(current_A, current_B);     //Me fijo si hubo un cambio en A o en B
-
-#ifdef ENCODER_DEV_MODE
-	gpioWrite(ENCODER_TEST_PIN, 0);
-#endif
 
 }
 

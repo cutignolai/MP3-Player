@@ -10,6 +10,7 @@
  *                      INCLUDE HEADER FILES                                    *
  ******************************************************************************/
 #include  <os.h>
+#include <stdbool.h>
 
 /*******************************************************************************
  *          CONSTANT AND MACRO DEFINITIONS USING #DEFINE                        *
