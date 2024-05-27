@@ -1,4 +1,5 @@
 
+
 /***************************************************************************//**
   @file     lcd.h
   @brief    LCD from SDK in NXP web
@@ -30,7 +31,7 @@
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
 
-#define INIT_INSTRUCTIONS 8
+
 
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
@@ -41,9 +42,8 @@
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
 
-const unsigned char initLCD[INIT_INSTRUCTIONS];
 extern const unsigned char upper_line[];
-volatile long count;
+extern const unsigned char lower_line[];
 //volatile bool pitIsrFlag[2];
 
 

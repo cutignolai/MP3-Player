@@ -27,12 +27,15 @@
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
 //CAMBIAR PINES
-#define LCD_ENABLE_EN	DIO_80
-#define LCD_RS_EN		DIO_81
-#define LCD_D7_EN		DIO_82
-#define LCD_D6_EN		DIO_83
-#define LCD_D5_EN		DIO_84
-#define LCD_D4_EN		DIO_85
+#define LCD_RS_EN		DIO_1
+#define LCD_ENABLE_EN	DIO_2
+#define LCD_D4_EN		DIO_3
+#define LCD_D5_EN		DIO_4
+#define LCD_D6_EN		DIO_5
+#define LCD_D7_EN		DIO_6
+
+
+
 
 
 #define LCD_D7_ON		gpioWrite(LCD_D7_EN, HIGH)
@@ -55,8 +58,8 @@
  * STATIC VARIABLES AND CONST VARIABLES WITH FILE LEVEL SCOPE
  ******************************************************************************/
 
-const unsigned char  upper_line[] = "TP FINAL:";
-const unsigned char  lower_line[] = "MP3 PLAYER";
+const unsigned char  upper_line[] = "AGUANTE         ";
+const unsigned char  lower_line[] = "QUILMES         ";
 
 const unsigned char  initLCD[INIT_INSTRUCTIONS]={0x02, 0x28, 0x0C,0x06,0x01,0x00};
 
@@ -87,21 +90,24 @@ void lcd_init(void){
 
     //pit_Init();    		//PIT Module Initialization
 
-	delay(2000); 			//Display initialization
+	delay(100); 			//Display initialization
 
 	SetUp();
+	lcd_clear();
 
 	instruction(0x80); //First line
 	text((unsigned char *)&upper_line[0]);
+	delay(100);
 
 	instruction(0xC0); //Second line
 	text((unsigned char *)&lower_line[0]);
+	delay(100); 			//Display initialization
 
-	//instruction(0x0F); //Cursor on blinking
 }
 
 void lcd_clear(void){
-    instructionLong(0x01); 		//Clear display
+	longInstruction(0x01); 		//Clear display
+	instruction(0x80);
 }
 
 void lcd_write_upper_line(unsigned char* words){
@@ -173,7 +179,7 @@ void longInstruction(unsigned char x){
 		enable_half_sec();
 
 		lcd_data((x<<4)&0xF0);
-		enable_ten_sec();
+		enable_half_sec();
 }
 
 //-----------------------------------------------------------------------
@@ -235,15 +241,14 @@ void text (unsigned char *b){
 
 void info(unsigned char x)
 {
-	//if (x == '�') x = 238;
 
 	LCD_RS_ON;
 
 	lcd_data( x&0xF0 );
-	enable_half_sec();
+	enable_ten_sec();
 
 	lcd_data( (x<<4)&0xF0 );
-	enable_half_sec();
+	enable_ten_sec();
 }
 
 
@@ -274,7 +279,6 @@ void delay(unsigned int time){
 }
 
 //-----------------------------------------------------------------------
-
 
 
 
