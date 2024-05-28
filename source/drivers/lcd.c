@@ -35,9 +35,6 @@
 #define LCD_D7_EN		DIO_6
 
 
-
-
-
 #define LCD_D7_ON		gpioWrite(LCD_D7_EN, HIGH)
 #define LCD_D7_OFF		gpioWrite(LCD_D7_EN, LOW)
 #define LCD_D6_ON		gpioWrite(LCD_D6_EN, HIGH)
@@ -67,8 +64,7 @@ const unsigned char  initLCD[INIT_INSTRUCTIONS]={0x02, 0x28, 0x0C,0x06,0x01,0x00
  *         FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
 
-void enable_ten_sec(void);
-void enable_half_sec(void);
+void enable(void);
 void SetUp(void);
 void instruction(unsigned char x);
 void longInstruction(unsigned char x);
@@ -108,11 +104,13 @@ void lcd_init(void){
 void lcd_clear(void){
 	longInstruction(0x01); 		//Clear display
 	instruction(0x80);
+	delay(100);
 }
 
 void lcd_write_upper_line(unsigned char* words){
     instruction(0x80); 			//Write in upper line
 	text(words);
+	delay(100);
 }
 
 void lcd_write_lower_line(unsigned char* words){
@@ -134,15 +132,10 @@ void lcd_Shift_Left(void){
  *******************************************************************************
  ******************************************************************************/
 
-void enable_ten_sec(void){
-	LCD_ENABLE_ON;
-	delay(10000);
-	LCD_ENABLE_OFF;
-}
 
-void enable_half_sec(void){
+void enable(void){
 	LCD_ENABLE_ON;
-	delay(500);
+	delay(50000);
 	LCD_ENABLE_OFF;
 }
 
@@ -164,10 +157,10 @@ void instruction(unsigned char x){
 		LCD_RS_OFF;
 
 		lcd_data(x&0xF0);
-		enable_ten_sec();
+		enable();
 
 		lcd_data((x<<4)&0xF0);
-		enable_ten_sec();
+		enable();
 }
 
 //-----------------------------------------------------------------------
@@ -176,10 +169,10 @@ void longInstruction(unsigned char x){
 		LCD_RS_OFF;
 
 		lcd_data(x&0xF0);
-		enable_half_sec();
+		enable();
 
 		lcd_data((x<<4)&0xF0);
-		enable_half_sec();
+		enable();
 }
 
 //-----------------------------------------------------------------------
@@ -245,10 +238,10 @@ void info(unsigned char x)
 	LCD_RS_ON;
 
 	lcd_data( x&0xF0 );
-	enable_ten_sec();
+	enable();
 
 	lcd_data( (x<<4)&0xF0 );
-	enable_ten_sec();
+	enable();
 }
 
 
@@ -279,8 +272,5 @@ void delay(unsigned int time){
 }
 
 //-----------------------------------------------------------------------
-
-
-
 
 

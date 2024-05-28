@@ -23,7 +23,7 @@
  ******************************************************************************/
 
 static void delayLoop(uint32_t veces);
-
+const unsigned char  pepe[] = "CACA            ";
 
 /*******************************************************************************
  *******************************************************************************
@@ -35,13 +35,19 @@ static void delayLoop(uint32_t veces);
 void App_Init (void)
 {
     gpioMode(PIN_LED_BLUE, OUTPUT);
+    gpioMode(PIN_LED_RED, OUTPUT);
+    gpioMode(PIN_SW2, INPUT);
     lcd_init();
 }
 
 /* Función que se llama constantemente en un ciclo infinito */
 void App_Run (void)
 {
-
+	if (!(GPIOC->PDIR & PIN_SW2)) {
+		gpioWrite(PIN_LED_RED, HIGH);
+		lcd_clear();
+		lcd_write_lower_line((unsigned char *)&pepe[0]);
+	}
     delayLoop(4000000UL);
     gpioToggle(PIN_LED_BLUE);
 }
