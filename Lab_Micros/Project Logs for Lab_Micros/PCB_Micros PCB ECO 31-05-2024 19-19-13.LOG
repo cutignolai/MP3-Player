@@ -1,0 +1,146 @@
+Added Component: Designator=C1(0805)
+Added Component: Designator=C2(0805)
+Added Component: Designator=C3(0805)
+Added Component: Designator=C4(0805)
+Added Component: Designator=DAC0(MOLEX2)
+Added Component: Designator=FRDMK64F(FRDM-K64F)
+Add component (AddParameter): Name = "Availability"; Value = "Unavailable"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MF"; Value = "NXP USA"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MP"; Value = "FRDM-K64F"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Price"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/FRDM-K64F/NXP%20USA%20Inc./view-part/508270/?ref=snap"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=IRQ(TPTH)
+Added Component: Designator=LCD(MODULE_LCD-16X2)
+Add component (AddParameter): Name = "Availability"; Value = "Not in stock"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Check_prices"; Value = "https://www.snapeda.com/parts/LCD-16X2/Gravitech/view-part/?ref=eda"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MF"; Value = "Gravitech"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MP"; Value = "LCD-16X2"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Price"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "SnapEDA_Link"; Value = "https://www.snapeda.com/parts/LCD-16X2/Gravitech/view-part/?ref=snap"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=M1(MOLEX3)
+Added Component: Designator=M2(MOLEX3)
+Added Component: Designator=MT?(XDCR_PEC11R-4215F-S0024)
+Add component (AddParameter): Name = "Availability"; Value = "Unavailable"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MF"; Value = ""; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "MP"; Value = "PEC11R-4215F-S0024"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Package"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Price"; Value = "None"; VariantName = "[No Variations]"
+Add component (AddParameter): Name = "Value"; Value = ""; VariantName = "[No Variations]"
+Added Component: Designator=R1(0805)
+Added Component: Designator=R2(PRESET V)
+Added Component: Designator=R3(0805)
+Added Component: Designator=R4(0805)
+Added Component: Designator=R5(0805)
+Added Component: Designator=R6(0805)
+Added Component: Designator=R7(0805)
+Added Component: Designator=R8(0805)
+Added Component: Designator=S1(TACTSWITCH)
+Added Component: Designator=S2(TACTSWITCH)
+Added Component: Designator=S3(TACTSWITCH)
+Added Pin To Net: NetName=DIO_1 Pin=FRDMK64F-J2-12
+Added Pin To Net: NetName=DIO_1 Pin=LCD-4
+Added Net: Name=DIO_1
+Added Pin To Net: NetName=DIO_2 Pin=FRDMK64F-J2-10
+Added Pin To Net: NetName=DIO_2 Pin=LCD-6
+Added Net: Name=DIO_2
+Added Pin To Net: NetName=DIO_3 Pin=FRDMK64F-J2-8
+Added Pin To Net: NetName=DIO_3 Pin=LCD-11
+Added Net: Name=DIO_3
+Added Pin To Net: NetName=DIO_4 Pin=FRDMK64F-J2-6
+Added Pin To Net: NetName=DIO_4 Pin=LCD-12
+Added Net: Name=DIO_4
+Added Pin To Net: NetName=DIO_5 Pin=FRDMK64F-J2-4
+Added Pin To Net: NetName=DIO_5 Pin=LCD-13
+Added Net: Name=DIO_5
+Added Pin To Net: NetName=DIO_6 Pin=FRDMK64F-J2-2
+Added Pin To Net: NetName=DIO_6 Pin=LCD-14
+Added Net: Name=DIO_6
+Added Pin To Net: NetName=DIO_7 Pin=C3-1
+Added Pin To Net: NetName=DIO_7 Pin=FRDMK64F-J1-15
+Added Pin To Net: NetName=DIO_7 Pin=MT?-A
+Added Pin To Net: NetName=DIO_7 Pin=R4-1
+Added Net: Name=DIO_7
+Added Pin To Net: NetName=DIO_8 Pin=C4-1
+Added Pin To Net: NetName=DIO_8 Pin=FRDMK64F-J1-13
+Added Pin To Net: NetName=DIO_8 Pin=MT?-B
+Added Pin To Net: NetName=DIO_8 Pin=R5-1
+Added Net: Name=DIO_8
+Added Pin To Net: NetName=DIO_9 Pin=C2-1
+Added Pin To Net: NetName=DIO_9 Pin=FRDMK64F-J1-11
+Added Pin To Net: NetName=DIO_9 Pin=MT?-1
+Added Pin To Net: NetName=DIO_9 Pin=R3-1
+Added Net: Name=DIO_9
+Added Pin To Net: NetName=DIO_10 Pin=FRDMK64F-J1-10
+Added Pin To Net: NetName=DIO_10 Pin=S1-1
+Added Net: Name=DIO_10
+Added Pin To Net: NetName=DIO_11 Pin=FRDMK64F-J1-8
+Added Pin To Net: NetName=DIO_11 Pin=S2-1
+Added Net: Name=DIO_11
+Added Pin To Net: NetName=DIO_12 Pin=FRDMK64F-J1-6
+Added Pin To Net: NetName=DIO_12 Pin=S3-1
+Added Net: Name=DIO_12
+Added Pin To Net: NetName=DIO_17 Pin=FRDMK64F-J1-14
+Added Pin To Net: NetName=DIO_17 Pin=M1-2
+Added Net: Name=DIO_17
+Added Pin To Net: NetName=DIO_18 Pin=FRDMK64F-J1-16
+Added Pin To Net: NetName=DIO_18 Pin=M2-2
+Added Net: Name=DIO_18
+Added Pin To Net: NetName=GND Pin=C1-2
+Added Pin To Net: NetName=GND Pin=C2-2
+Added Pin To Net: NetName=GND Pin=C3-2
+Added Pin To Net: NetName=GND Pin=C4-2
+Added Pin To Net: NetName=GND Pin=DAC0-2
+Added Pin To Net: NetName=GND Pin=FRDMK64F-J2-3
+Added Pin To Net: NetName=GND Pin=LCD-1
+Added Pin To Net: NetName=GND Pin=LCD-5
+Added Pin To Net: NetName=GND Pin=LCD-16
+Added Pin To Net: NetName=GND Pin=M1-1
+Added Pin To Net: NetName=GND Pin=M2-3
+Added Pin To Net: NetName=GND Pin=MT?-2
+Added Pin To Net: NetName=GND Pin=MT?-COM
+Added Pin To Net: NetName=GND Pin=R2-3
+Added Pin To Net: NetName=GND Pin=R6-1
+Added Pin To Net: NetName=GND Pin=R7-1
+Added Pin To Net: NetName=GND Pin=R8-1
+Added Net: Name=GND
+Added Pin To Net: NetName=NetDAC0_1 Pin=DAC0-1
+Added Pin To Net: NetName=NetDAC0_1 Pin=FRDMK64F-J4-11
+Added Net: Name=NetDAC0_1
+Added Pin To Net: NetName=NetFRDMK64F_J4-2 Pin=FRDMK64F-J4-2
+Added Pin To Net: NetName=NetFRDMK64F_J4-2 Pin=IRQ-1
+Added Net: Name=NetFRDMK64F_J4-2
+Added Pin To Net: NetName=NetLCD_3 Pin=LCD-3
+Added Pin To Net: NetName=NetLCD_3 Pin=R2-2
+Added Net: Name=NetLCD_3
+Added Pin To Net: NetName=NetLCD_15 Pin=LCD-15
+Added Pin To Net: NetName=NetLCD_15 Pin=R1-2
+Added Net: Name=NetLCD_15
+Added Pin To Net: NetName=NetR6_2 Pin=R6-2
+Added Pin To Net: NetName=NetR6_2 Pin=S1-3
+Added Net: Name=NetR6_2
+Added Pin To Net: NetName=NetR7_2 Pin=R7-2
+Added Pin To Net: NetName=NetR7_2 Pin=S2-3
+Added Net: Name=NetR7_2
+Added Pin To Net: NetName=NetR8_2 Pin=R8-2
+Added Pin To Net: NetName=NetR8_2 Pin=S3-3
+Added Net: Name=NetR8_2
+Added Pin To Net: NetName=Vcc Pin=C1-1
+Added Pin To Net: NetName=Vcc Pin=FRDMK64F-J3-10
+Added Pin To Net: NetName=Vcc Pin=LCD-2
+Added Pin To Net: NetName=Vcc Pin=M1-3
+Added Pin To Net: NetName=Vcc Pin=M2-1
+Added Pin To Net: NetName=Vcc Pin=R1-1
+Added Pin To Net: NetName=Vcc Pin=R2-1
+Added Pin To Net: NetName=Vcc Pin=R3-2
+Added Pin To Net: NetName=Vcc Pin=R4-2
+Added Pin To Net: NetName=Vcc Pin=R5-2
+Added Pin To Net: NetName=Vcc Pin=S1-4
+Added Pin To Net: NetName=Vcc Pin=S2-4
+Added Pin To Net: NetName=Vcc Pin=S3-4
+Added Net: Name=Vcc
+Added Class: Name=Sheet1
+Added Room: Name=Sheet1
