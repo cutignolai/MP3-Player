@@ -1,1 +1,6 @@
 /Debug/
+MP3-Player JLink Debug.launch
+MP3-Player JLink Release.launch
+MP3-Player LinkServer Debug.launch
+MP3-Player LinkServer Release.launch
+.cproject

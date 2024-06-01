@@ -28,19 +28,6 @@
 static PORT_Type* const PORT_PTRS[FSL_FEATURE_SOC_PORT_COUNT] = PORT_BASE_PTRS;
 static GPIO_Type* const GPIO_PTRS[FSL_FEATURE_SOC_PORT_COUNT] = GPIO_BASE_PTRS;
 
-
-
-/*
-    0b0000: Interrupt/DMA request disabled
-    0b1000: Interrupt when logic 0
-    0b1001: Interrupt on rising-edge
-    0b1010: Interrupt on falling-edge
-    0b1011: Interrupt on either edge
-    0b1100: Interrupt when logic 1
-*/
-static const uint32_t IRQC_MODES[] = {0b1000,0b1001,0b1010,0b1011,0b1100,0b1101};
-
-
 static pinIrqFun_t CALLBACKS[ARRAY_SIZE];
 
 static void IRQHandler(int32_t port);
@@ -155,7 +142,7 @@ bool gpioIRQ (pin_t pin, uint8_t irqMode, pinIrqFun_t irqFun) {
 
     // Verifico que se ingresaron los datos correctos
 	if ( pin > PORTNUM2PIN(PE,31) ) return false;
-	if ( irqMode >= GPIO_IRQ_CANT_MODES ) return false;
+	if ( irqMode >= GPIO_IRQ_MODE_HIGH ) return false;
 
     // Obtengo el puerto y el numero de pin
     uint32_t port = PIN2PORT(pin);
@@ -166,7 +153,7 @@ bool gpioIRQ (pin_t pin, uint8_t irqMode, pinIrqFun_t irqFun) {
 
     // Borro el flag
 	uint32_t pcr_clear_irqc = (port_ptr->PCR[num_pin] & ~PORT_PCR_IRQC_MASK);
-	port_ptr->PCR[num_pin] = pcr_clear_irqc | PORT_PCR_IRQC(IRQC_MODES[irqMode]) | PORT_PCR_ISF_MASK;
+	port_ptr->PCR[num_pin] = pcr_clear_irqc | PORT_PCR_IRQC(irqMode) | PORT_PCR_ISF_MASK;
 
     // Habilito o deshabilito la interrupcion
 	if (irqMode == GPIO_IRQ_MODE_DISABLE) {	NVIC_DisableIRQ(PORTX_IRQn(port)); }

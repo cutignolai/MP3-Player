@@ -46,14 +46,17 @@ enum { PA, PB, PC, PD, PE };
 
 
 // IRQ modes
-enum {
-    GPIO_IRQ_MODE_DISABLE,
-    GPIO_IRQ_MODE_RISING_EDGE,
-    GPIO_IRQ_MODE_FALLING_EDGE,
-    GPIO_IRQ_MODE_BOTH_EDGES,
-
-    GPIO_IRQ_CANT_MODES
-};
+typedef enum {
+	GPIO_IRQ_MODE_DISABLE		= 0x00,
+	GPIO_IRQ_MODE_DMARising		= 0x01,
+	GPIO_IRQ_MODE_DMAFalling	= 0x02,
+	GPIO_IRQ_MODE_DMAEither		= 0x03,
+	GPIO_IRQ_MODE_LOW			= 0x08,
+	GPIO_IRQ_MODE_RISING_EDGE	= 0x09,
+	GPIO_IRQ_MODE_FALLING_EDGE	= 0x0A,
+	GPIO_IRQ_MODE_BOTH_EDGES	= 0x0B,
+	GPIO_IRQ_MODE_HIGH			= 0x0C,
+} IRQ_Event_t;
 
 
 /*******************************************************************************

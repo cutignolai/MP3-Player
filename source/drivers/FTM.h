@@ -14,17 +14,20 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "gpio.h"
+#include "MK64F12.h"
 
 /*******************************************************************************
  * CONSTANT AND MACRO DEFINITIONS USING #DEFINE
  ******************************************************************************/
 #define MAX_CHANNEL_COUNT	8
 #define FTM_SAFE_MODE
+// #define FTM_MANUAL
 #define FTM_N	4
 #define PWM_MAX_DC	4096
 #define NO_TRIGGER	32
 #define BUS_CLK_FREQ	50	// in MHz
 #define USEC2TICKS(usec, prescaler)		(((usec) * BUS_CLK_FREQ) / (1 << (prescaler)))
+#define MEDIAN(x1, x2)		(((x2) - (x1))/2 + (x1))	// Asume x2 > x1
 
 /*******************************************************************************
  * ENUMERATIONS AND STRUCTURES AND TYPEDEFS
@@ -40,6 +43,7 @@ enum PWM_options{HIGH_TRUE=2, LOW_TRUE=1};
 enum FTM_Input{BUS_CLK=1, FIXED_FREQ_CLK=2, EXTERNAL_CLK=3};
 
 typedef uint8_t ftm_id;
+typedef void (*FTM_manual_callback)();	// Callback externa, sí puede ser seteada por parte del cliente
 
 typedef struct {
 	uint8_t channel;
@@ -79,6 +83,7 @@ typedef enum {
 /*******************************************************************************
  * VARIABLE PROTOTYPES WITH GLOBAL SCOPE
  ******************************************************************************/
+static FTM_Type* const FTM_PTRS[] = FTM_BASE_PTRS;      // Cambiar a sólo el registro CnV
 
 /*******************************************************************************
  * FUNCTION PROTOTYPES WITH GLOBAL SCOPE
@@ -86,9 +91,13 @@ typedef enum {
 void FTM_Init(ftm_id id, ftm_config_t config);
 bool IC_IsNewData(uint8_t id);
 uint16_t IC_GetData(uint8_t id);
-void PWM_Init(uint8_t id, uint16_t period, uint16_t dc);
+void PWM_Init(uint8_t id, uint8_t ch, uint16_t period, uint16_t dc);
 void IC_Init(uint8_t id, uint16_t noise_th);
 void FTM_StartTimer(uint8_t id);
+void FTM_StopTimer(uint8_t id);
+void FTM_SetManualCallback(uint8_t id, FTM_manual_callback callback);
+// void PWM_SetDC(uint8_t id, uint16_t DC);
+void PWM_SetON(uint8_t id, uint16_t ton);
 
 /*******************************************************************************
  ******************************************************************************/
