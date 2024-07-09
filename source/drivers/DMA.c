@@ -79,7 +79,7 @@ void DMA_Config(DMA_config_t config){
 	// Configuro el destino
 	DMA_PTR->TCD[config.channel].DADDR = (uint32_t)(config.destination_buffer);  // To change FTM Duty
 
-	// Configuro el offset para el origen y el destino
+	// Configuro el offset x minor loop para el origen y el destino
 	DMA_PTR->TCD[config.channel].SOFF = config.source_offset;
 	DMA_PTR->TCD[config.channel].DOFF = config.destination_offset;
 
@@ -87,8 +87,8 @@ void DMA_Config(DMA_config_t config){
     DMA_PTR->TCD[config.channel].ATTR = DMA_ATTR_SSIZE(DMA_SIZE(config.transfer_size)) | DMA_ATTR_DSIZE(DMA_SIZE(config.transfer_size));
 
     // Configuro buffer circular
-    // SI NO SE CONFIGURA ES PORQUE EL ADDRESS NO ESTÁ CORRECTAMENTE ALINEADO, EN ESE CASO USAR EL ATRIBUTO aligned. Ejemplo:
-    // uint16 sourceBuffer[3] __attribute__((aligned(16))) = {0x1234, 0x5678, 0x9ABC};	Acá MOD=4 tal que L=2**MOD=16
+    // SI NO SE CONFIGURA ES PORQUE EL ADDRESS NO ESTÁ CORRECTAMENTE ALINEADO, EN ESE CASO USAR EL ATRIBUTO aligned.
+    //  Ejemplo: uint16 sourceBuffer[3] __attribute__((aligned(16))) = {0x1234, 0x5678, 0x9ABC};	Acá MOD=4 tal que L=2**MOD=16
 	if (config.source_module != 0 && config.source_offset != 0){			// Source
 		// Chequeo que el address sea válido
 		if (config.source_module < 32 && CHECK_LSB(config.source_module, config.source_buffer)){
@@ -137,7 +137,7 @@ void DMA_Config(DMA_config_t config){
 	// Offset que se aplicará a source luego de cada mayor loop -> Es SIGNADO
 	DMA_PTR->TCD[config.channel].SLAST = config.mayor_loop_offset_s;
 
-    // DLASTSGA DLAST Scatter y Gatter
+    // DLASTSGA DLAST Scatter y Gather
 	DMA_PTR->TCD[config.channel].CSR = DMA_CSR_ESG((uint8_t) config.scatter_gather);	// Habilito o no Scatter&Gather
     DMA_PTR->TCD[config.channel].DLAST_SGA = config.mayor_loop_offset_d;				// Offset o address del próximo TCD
 
@@ -147,11 +147,26 @@ void DMA_Config(DMA_config_t config){
     DMA_PTR->TCD[config.channel].CSR |= DMA_CSR_MAJORELINKCH(config.mayor_link_ch);
 #endif
 
-#ifdef DMA_DEBUG
     gpioMode(DMA_TEST_PIN, OUTPUT);
-#endif
 
 	DMA_EnableRequest(config.channel);
+}
+
+//void DMA_StartTransfer(uint8_t channel){
+//	DMA_PTR->TCD[channel] |= DMA_CSR_START(1);
+//}
+
+void DMA_EnableChannel(uint8_t channel){
+	//DMAMUX->CHCFG[channel] |= DMAMUX_CHCFG_ENBL_MASK;
+	DMA_PTR->TCD[channel].CSR |= DMA_CSR_START(1);
+}
+
+void DMA_DisableChannel(uint8_t channel){
+	//DMAMUX->CHCFG[channel] &= ~DMAMUX_CHCFG_ENBL_MASK;
+}
+
+bool DMA_IsTransfer(uint8_t channel){
+	return (bool)(DMA_PTR->TCD[channel].CSR & DMA_CSR_DONE_MASK);
 }
 
 void DMA_SetCallback(DMAn_t channel, void(*funcallback)(void)){

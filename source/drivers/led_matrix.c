@@ -9,7 +9,9 @@
  ******************************************************************************/
 #include "gpio.h"
 #include "board.h"
-#include "timer.h"
+#include "DMA.h"
+#include "FTM.h"
+// #include "timer.h"
 #include "led_matrix.h"
 
 /*******************************************************************************
@@ -17,28 +19,35 @@
  ******************************************************************************/
 
 #define PIXEL_BYTES		3
+#define BYTE_SIZE       8
 
 /***** PIXEL TIMING *****/
-#define	Ts			1.25 //us
-#define T0H			0.4 //us
-#define T0L			0.85 //us
-#define T1H			0.8 //us
-#define T1L			0.45 //us
-#define RES			50 //us
+// Ts			1.25 us
+// T0H			0.4 us
+// T0L			0.85 us
+// T1H			0.8 us
+// T1L			0.45 us
+// RES			50 us
+
+#define HIGH_BIT_DC     41
+#define LOW_BIT_DC      21
+
+#define RESET_PERIOD    50 //us
 
 /**** OVERALL TIMING ****/
 #define REFRESH_PERIOD	16000 //us
 
 /******* PINS *******/
-#define DIN     PTC9
-#define DOUT    PTC10
-
-#define N_PINS  8
-
 #ifdef LED_MATRIX_DEV_MODE
 	#define LED_MATRIX_TEST_PIN     PTC4
 #endif
 
+#define FTM_ID  0
+#define PWM_CH  1
+#define FTM_CH_PIN	PORTNUM2PIN(PC, 2)
+#define LED_MATRIX_PRESCALER FTM_PSC_x1
+
+#define DMA_ID	DMA_0
 
 /*******************************************************************************
  *               ENUMERATIONS AND STRUCTURES AND TYPEDEFS                       *
@@ -47,22 +56,16 @@
 /*******************************************************************************
  *                  VARIABLE PROTOTYPES WITH GLOBAL SCOPE                       *
  ******************************************************************************/
+uint16_t matrix_buffer[MATRIX_ROWS*MATRIX_COLS*PIXEL_BYTES*BYTE_SIZE] __attribute__((aligned(16)));
 
 /*******************************************************************************
  * FUNCTION PROTOTYPES FOR PRIVATE FUNCTIONS WITH FILE LEVEL SCOPE
  ******************************************************************************/
-// void refresh_display(void);
-// void set_segment(uint8_t seg, uint8_t set);
-// void set_display(digit_t arr[]);
-// void set_digit(digit_t number, uint8_t position);
-// void set_buffer(digit_t *dig_arr, uint8_t arr_len);
-// void clear_buffer();
-// void blink_digits();
-// void scroll_buffer();
-// void scroll_message();
-// void display_blink(digit_t* arr);
-// void clear_display();
-// void auto_set_buffer_index();
+void loadMatrix(matrix_pixel_t* matrix_pixels);
+void byte2DC(uint8_t byte, uint16_t* pixel);
+
+void DMA_callback();
+void DMA_Error_callback();
 
 /*******************************************************************************
  * ROM CONST VARIABLES WITH FILE LEVEL SCOPE
@@ -71,303 +74,112 @@
 /*******************************************************************************
  * STATIC VARIABLES AND CONST VARIABLES WITH FILE LEVEL SCOPE
  ******************************************************************************/
-// digit_t char_arr[] = {NUM_0, NUM_1, NUM_2, NUM_3, NUM_4, NUM_5, NUM_6, NUM_7, NUM_8, NUM_9, DASH, LOW_DASH, POINT, CLEAR, 
-// LET_A, LET_a, LET_b, LET_C, LET_d, LET_E, LET_e, LET_F, LET_G, LET_g, LET_H, LET_h, LET_I, LET_J, LET_j, LET_l, LET_L, LET_n, 
-// LET_O, LET_P, LET_Q, LET_r, LET_S, LET_t, LET_U, LET_X, LET_Y };
 
-// uint8_t seg_arr[] = {SEGA, SEGB, SEGC, SEGD, SEGE, SEGF, SEGG, SEGDP};
-
-// display_states_t display_state = DISPLAY_CLEAR;
-// uint8_t display_idx = 0;        // Índice que indica qué dígito del display configurar
-
-// digit_t buffer[BUFFER_MAX_LEN + 1] = {IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR, IDX_CLEAR};
-// uint8_t buffer_len;         // Cantidad de caracteres seteados del buffer
-// uint8_t buffer_idx = 0;         // Caracter a partir de la cual mostrar
-
-// uint8_t brightness = BRIGHTNESS_LOW;
-// uint8_t brightness_count = 0;
-// uint8_t intensity = MAX_INTENSITY >> BRIGHTNESS_LOW;
-
-// uint8_t scroll_idx;         // Índice que indica el dígito del buffer que se va a mostrar en la posición 1 en ese instante de scroll
-
-// bool show_last = false;
-
-// bool blink = false;
-// bool blinking_digits[DISPLAY_LEN] = { false, false, false, false};
-
-// // TIMERS
-// tim_id_t refresh_timer;
-// tim_id_t blink_timer;
-// tim_id_t scroll_timer;
+static bool update_matrix = false;
+static matrix_pixel_t* matrix_src = 0;
 
 /*******************************************************************************
  *******************************************************************************
                         GLOBAL FUNCTION DEFINITIONS
  *******************************************************************************
  ******************************************************************************/
-// INIT
-// void initLedMatrix(){
 
-// 	gpioMode(DIN, OUTPUT);
-//     gpioMode(DOUT, INPUT);
+void initLedMatrix(){
 
-// // #ifdef LED_MATRIX_DEV_MODE
-// // 	gpioMode(LED_MATRIX_TEST_PIN, OUTPUT);
-// // #endif
-
-//     // CREATE TIMERS
-//     timerInit();
-//     refresh_timer = timerGetId();
-//     timerCreate(refresh_timer, TIMER_MS2TICKS(MAX_REFRESH_T), TIM_MODE_PERIODIC, refresh_display);
-//     blink_timer = timerGetId();
-//     timerCreate(blink_timer, TIMER_MS2TICKS(BLINK_T), TIM_MODE_PERIODIC, blink_digits);
-//     scroll_timer = timerGetId();
-//     timerCreate(scroll_timer, TIMER_MS2TICKS(SCROLL_T), TIM_MODE_PERIODIC, scroll_buffer);
-
-//     setBrightness(BRIGHTNESS_MEDIUM);
-
-//     // INIT 7 SEGMENTS
-//     buffer_len = BUFFER_MAX_LEN;
-//     clear_buffer();
-//     buffer[BUFFER_MAX_LEN] = IDX_CLEAR;
-//     clear_display();
-
-//     // START DISPLAY
-//     timerActivate(refresh_timer);
-// }                     
-
-// void setClearMode(){
-//     if (display_state != DISPLAY_CLEAR){
-//         timerReset(blink_timer);
-//         timerReset(scroll_timer);
-//     }
-//     display_state = DISPLAY_CLEAR;
-// }
-
-// void setScrollMode(){
-//     if (display_state != DISPLAY_SCROLL){
-//         timerReset(blink_timer);
-//         timerRestart(scroll_timer);
-//         scroll_idx = 0;
-//     }
-//     display_state = DISPLAY_SCROLL;
-// }
-
-// void setStaticMode(){
-//     if (display_state != DISPLAY_STATIC){
-//         timerReset(blink_timer);
-//         timerReset(scroll_timer);
-//     }
-//     display_state = DISPLAY_STATIC;
-// }
-
-// void setBlinkMode(){
-//     if (display_state != DISPLAY_BLINK){
-//         timerReset(blink_timer);
-//         timerReset(scroll_timer);
-//         blink = false;
-//         timerRestart(blink_timer);
-//     }
-//     display_state = DISPLAY_BLINK;
-// }
-
-// void loadBuffer(digit_t *msg, uint8_t msg_len){
-//     if (msg_len > BUFFER_MAX_LEN) { msg_len = BUFFER_MAX_LEN; }
-//     set_buffer(msg, msg_len);
-//     if (show_last) { auto_set_buffer_index(); }
-// }
-
-// void showLastDigits(bool b){
-//     show_last = b;
-//     if (show_last) { auto_set_buffer_index(); }
-// }
-
-// void setBufferIndex(uint8_t idx){
-//     if (idx < BUFFER_MAX_LEN - DISPLAY_LEN){
-//         buffer_idx = idx;
-//     }
-// }
-
-// void setBlinkingDigits(bool* arr){
-//     uint8_t i;
-//     for (i = 0; i < DISPLAY_LEN; i++){
-//         blinking_digits[i] = *(arr + i);
-//     }
-// }
-
-// void setBrightness(brightness_states_t bright){
-//     if ( BRIGHTNESS_LOW <= bright && bright <= BRIGHTNESS_HIGH ){
-//         brightness = bright;
-//         intensity = MAX_INTENSITY >> brightness;
-//     }
-// }
-
-// void upBrightness(){
-//     setBrightness(brightness + 1);
-// }
-
-// void downBrightness(){
-//     setBrightness(brightness - 1);
-// }
-
-// uint8_t getBrightnessState(){
-//     return brightness;
-// }
-
-// /*******************************************************************************
-//  *******************************************************************************
-//                         LOCAL FUNCTION DEFINITIONS
-//  *******************************************************************************
-//  ******************************************************************************/
-
-// void refresh_display()
-// {
-
-// #ifdef DISPLAY_DEV_MODE
-// 	gpioWrite(DISPLAY_TEST_PIN, 1);
+// #ifdef LED_MATRIX_DEV_MODE
+// 	gpioMode(LED_MATRIX_TEST_PIN, OUTPUT);
 // #endif
 
-//     if( ! ( brightness_count % intensity ) ){
+    ftm_channel_config_t ch1 = { .channel = PWM_CH, .mode = EDGE_PWM, .options = HIGH_TRUE, .dma = true, .pin = FTM_CH_PIN, .pin_mux = 4 };
+	ftm_config_t ftm0 = { .prescaler = FTM_PSC_x1, .count_mode = UP_COUNT, .overflow = true, .input_clock = BUS_CLK, .trigger = NO_TRIGGER, .trigger_options = 0, .channel_n = PWM_CH, .channel_arr[0] = ch1 };
+	FTM_Init(FTM_ID, ftm0);
+	PWM_Init(FTM_ID, PWM_CH, 62, matrix_buffer[0]);
 
-//         switch (display_state)
-//         {
-//             case DISPLAY_SCROLL:
-//                 if (buffer_len <= DISPLAY_LEN){
-//                     set_digit(buffer[display_idx], display_idx);
-//                 } else {
-//                     scroll_message();
-//                 }
-//                 break;
+	DMA_config_t dmaconfig = {
+			.channel = DMA_ID,
+			.request_source = DMA_FTM0CH1,
+			.trigger = false,
+			.source_buffer = (uint16_t*) &matrix_buffer[0],
+			.destination_buffer = (uint16_t*) (&FTM_PTRS[FTM_ID]->CONTROLS[PWM_CH].CnV),
+			.source_offset = sizeof(matrix_buffer[0]),		// Source offset de 2 bytes xq CnV es de 16 bits
+			.destination_offset = 0x00,						// Siempre va al mismo lugar (a CnV)
+			.transfer_size = sizeof(matrix_buffer[0]),		// Transferencias de 16 bits (2 bytes) xq CnV es de 16 bits
+			.source_module = 0,
+			.destination_module = 0,
+			.minor_loop_count = sizeof(matrix_buffer[0]),	// 2 bytes por minor loop xq CnV es de 16 bits
+			.mayor_loop_count = sizeof(matrix_buffer)/sizeof(matrix_buffer[0])+1,		// Cada mayor loop equivale a un recorrido del arreglo
+			.mayor_loop_offset_s = -(sizeof(matrix_buffer)+2),		// Reinicia el arreglo luego de cada mayor loop
+			.mayor_loop_offset_d = 0,							// Mismo destino luego de cada mayor loop
+			.scatter_gather = false,
+	} ;
 
-//             case DISPLAY_BLINK:
-//                 if (blink && blinking_digits[display_idx]){
-//                     set_digit(IDX_CLEAR, display_idx);
-//                 } else {
-//                 set_digit(buffer[buffer_idx + display_idx], display_idx);
-//                 }
-//                 break;
+	DMA_Config(dmaconfig);
+	DMA_SetCallback(DMA_ID, &DMA_callback);
+	DMA_SetErrorCallback(DMA_ID, &DMA_Error_callback);
+	//FTM_StartTimer(FTM_ID);
+    //DMA_DisableChannel(PWM_CH);
 
-//             case DISPLAY_STATIC:
-//                 set_digit(buffer[buffer_idx + display_idx], display_idx);
-//                 break;
+}                     
 
-//             case DISPLAY_CLEAR:
-//             default:
-//                 clear_display();
-//                 break;
-//         }
-//     } else {
-//     	set_digit(IDX_CLEAR, DISPLAY_LEN - 1);
-//     }
-    
-// 	display_idx++;
+void showMatrix(){
+	DMA_EnableChannel(PWM_CH);
+    FTM_StartTimer(FTM_ID);
+}
 
-//     if ( display_idx == DISPLAY_LEN){ 
-//         display_idx = 0; 
-//         brightness_count++;
-//         if ( brightness_count >= MAX_INTENSITY ){
-//             brightness_count = 0;
-//         }
-//     }
+void updateMatrix(matrix_pixel_t* matrix_pixels){
+	if (DMA_IsTransfer(PWM_CH)){
+		update_matrix = true;
+		matrix_src = matrix_pixels;
+	} else {
+		loadMatrix(matrix_pixels);
+	}
+}
 
-// #ifdef DISPLAY_DEV_MODE
-// 	gpioWrite(DISPLAY_TEST_PIN, 0);
-// #endif
 
-// }
+/*******************************************************************************
+ *******************************************************************************
+                        LOCAL FUNCTION DEFINITIONS
+ *******************************************************************************
+ ******************************************************************************/
 
-// void scroll_message() {
+void loadMatrix(matrix_pixel_t* matrix_pixels){
+	uint8_t i;
+    for (i = 0; i < MATRIX_ROWS*MATRIX_COLS; i++){
+        byte2DC(matrix_pixels[i].green, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE]);
+        byte2DC(matrix_pixels[i].red, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE + BYTE_SIZE]);
+        byte2DC(matrix_pixels[i].blue, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE + BYTE_SIZE*2]);
+    }
+}
 
-//     set_digit(buffer[(scroll_idx + display_idx) % (buffer_len + 1)], display_idx);
-//     if (scroll_idx == buffer_len + 1){
-//     	scroll_idx = 0;
-//     }
-//     //set_digit(buffer[CLEAR], display_idx);
-//     if (display_idx == DISPLAY_LEN){
-//     	scroll_idx++;
-//     }
-// }
+void byte2DC(uint8_t byte, uint16_t* pixel){
+    int8_t i;
+    uint8_t mask = 1;
+    for (i = 7; i >= 0; i--){
+        if (byte & mask){
+            pixel[i] = HIGH_BIT_DC;
+        } else {
+            pixel[i] = LOW_BIT_DC;
+        }
+        mask = mask << 1;
+    }
+}
 
-// void clear_display(){
-//     clear_buffer();
-//     buffer_idx = 0;
-// }
+/* The blue LED is toggled when a TCD is completed. */
+void DMA_callback(){
+	/* Toggle the blue LED. */
+	FTM_StopTimer(FTM_ID);
+	//DMA_DisableChannel(PWM_CH);
+	if (update_matrix){
+		loadMatrix(matrix_src);
+	}
+	update_matrix = false;
+}
 
-// void set_display(digit_t* arr){
-//     uint8_t i;
-//     for (i = 0; i < DISPLAY_LEN; i++){
-//         set_digit(*(arr + i), i);
-//     }
-// }
+/* The red LED is toggled when an error occurs. */
+void DMA_Error_callback(){
+	uint8_t i = 0;
+}
 
-// void set_digit(digit_t number, uint8_t position){
 
-//     digit_t character = char_arr[number];
-    
-//     // Select digit
-//     gpioWrite(SEL0, GET_SEL0(position));
-//     gpioWrite(SEL1, GET_SEL1(position));
-
-//     // Segments ON
-//     uint8_t idx;
-//     for (idx = 0; idx < SEGMENTS; idx++){
-//         uint8_t set = character & 1;
-//         set_segment(seg_arr[idx], set);
-//         character = character >> 1;
-//     }
-// }
-
-// void set_segment(uint8_t seg, uint8_t set){
-//     gpioWrite(seg, set);
-// }
-
-// void set_buffer(digit_t *dig_arr, uint8_t arr_len){
-//     uint8_t i;
-//     clear_buffer();
-//     clear_display();
-//     for (i = 0; i < arr_len; i++){
-//         buffer[i] = *(dig_arr + i);
-//     }
-//     buffer_len = arr_len;
-// }
-
-// void auto_set_buffer_index(){
-//     if (buffer_len > DISPLAY_LEN){
-//         buffer_idx = buffer_len - DISPLAY_LEN;
-//     } else {
-//         buffer_idx = 0;
-//     }
-// }
-
-// void clear_buffer(void)
-// {
-//     uint8_t i;
-//     for (i = 0; i < buffer_len; i++){
-//     	buffer[i] = IDX_CLEAR;
-//     }
-//     buffer_len = 0;
-// }
-
-// void display_blink(digit_t* arr){
-//     uint8_t i;
-//     for (i = 0; i < DISPLAY_LEN; i++){
-//         if (blink && blinking_digits[i]){
-//             set_digit(IDX_CLEAR, i);
-//         } else {
-//             set_digit(*(arr + i), i);
-//         }
-//     }
-// }
-
-// // callback scroll
-// void scroll_buffer(){
-//     scroll_idx++;
-// }
-
-// // callback blink
-// void blink_digits(){
-//     blink = !blink;
-// }
-
-// /*******************************************************************************
-//  ******************************************************************************/
+/*******************************************************************************
+ ******************************************************************************/

@@ -15,7 +15,7 @@
  ******************************************************************************/
 
 #define DMA_TEST_PIN		PORTNUM2PIN(PA, 2)
-#define DMA_DEBUG
+//#define DMA_DEBUG
 
 #define DMA_n				16
 
@@ -103,8 +103,8 @@ typedef struct DMA_config
   uint16_t* source_buffer;
   uint16_t* destination_buffer;
   bool trigger;
-  uint8_t source_offset;
-  uint8_t destination_offset;
+  int8_t source_offset;
+  int8_t destination_offset;
   uint8_t transfer_size;
   uint8_t source_module;
   uint8_t destination_module;
@@ -115,8 +115,8 @@ typedef struct DMA_config
   bool ml_offset_d;
   uint32_t ml_offset;
 #endif
-  uint32_t mayor_loop_offset_s;	// Define el offset a ser sumado al source address luego de cada mayor loop, es SIGNADO
-  uint32_t mayor_loop_offset_d;
+  int32_t mayor_loop_offset_s;	// Define el offset a ser sumado al source address luego de cada mayor loop, es SIGNADO
+  int32_t mayor_loop_offset_d;
   bool scatter_gather;			// Habilita el cambio a un TCD distinto luego de finalizar un mayor loop. Se cargará el TCD al que apunte mayor_loop_offset_d
 #ifdef DMA_MINOR_LINK
   bool minor_link;					// Define si linkear a otro canal al finalizar el minor loop
@@ -147,6 +147,12 @@ typedef enum {
  ******************************************************************************/
 
 void DMA_Config(DMA_config_t config);
+
+void DMA_EnableChannel(uint8_t channel);
+
+void DMA_DisableChannel(uint8_t channel);
+
+bool DMA_IsTransfer(uint8_t channel);
 
 void DMA_SetCallback(uint8_t channel, void(*funcallback)(void));
 
