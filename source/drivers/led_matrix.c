@@ -18,6 +18,9 @@
  *          CONSTANT AND MACRO DEFINITIONS USING #DEFINE                        *
  ******************************************************************************/
 
+#define MAX_BRIGHT		100
+#define MIN_BRIGHT		1
+
 #define PIXEL_BYTES		3
 #define BYTE_SIZE       8
 
@@ -33,9 +36,6 @@
 #define LOW_BIT_DC      21
 
 #define RESET_PERIOD    50 //us
-
-/**** OVERALL TIMING ****/
-#define REFRESH_PERIOD	16000 //us
 
 /******* PINS *******/
 #ifdef LED_MATRIX_DEV_MODE
@@ -77,6 +77,7 @@ void DMA_Error_callback();
 
 static bool update_matrix = false;
 static matrix_pixel_t* matrix_src = 0;
+static int brightness = MAX_BRIGHT;
 
 /*******************************************************************************
  *******************************************************************************
@@ -135,6 +136,12 @@ void updateMatrix(matrix_pixel_t* matrix_pixels){
 	}
 }
 
+void setBrightness(int br){
+	if (br != brightness && MIN_BRIGHT <= br && br <= MAX_BRIGHT){
+		brightness = br;
+	}
+}
+
 
 /*******************************************************************************
  *******************************************************************************
@@ -145,9 +152,9 @@ void updateMatrix(matrix_pixel_t* matrix_pixels){
 void loadMatrix(matrix_pixel_t* matrix_pixels){
 	uint8_t i;
     for (i = 0; i < MATRIX_ROWS*MATRIX_COLS; i++){
-        byte2DC(matrix_pixels[i].green, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE]);
-        byte2DC(matrix_pixels[i].red, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE + BYTE_SIZE]);
-        byte2DC(matrix_pixels[i].blue, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE + BYTE_SIZE*2]);
+        byte2DC((int) matrix_pixels[i].green*brightness/MAX_BRIGHT, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE]);
+        byte2DC((int) matrix_pixels[i].red*brightness/MAX_BRIGHT, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE + BYTE_SIZE]);
+        byte2DC((int) matrix_pixels[i].blue*brightness/MAX_BRIGHT, &matrix_buffer[i*PIXEL_BYTES*BYTE_SIZE + BYTE_SIZE*2]);
     }
 }
 

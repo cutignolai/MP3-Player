@@ -45,6 +45,7 @@ typedef struct {
 void initLedMatrix();
 void showMatrix();
 void updateMatrix(matrix_pixel_t* matrix_pixels);
+void setBrightness(int br);
 
 /*******************************************************************************
  ******************************************************************************/
